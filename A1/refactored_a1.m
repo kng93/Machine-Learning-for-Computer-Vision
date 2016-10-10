@@ -180,6 +180,7 @@ function [] = run_problem(prob_num, ...
     % TODO: Solve the error - run it on less partitions/bins =S (e.g. q1a)
     fprintf('FINAL RESULT (k = %d, feature_size = %d, part_size = %d, num_orient = %d):\n', ...
             min_k, min_feat, min_part, min_orient);
+        
     test_model(min_test_data, min_mdl);
             
     fprintf('Done part %0.1f\n', prob_num);
