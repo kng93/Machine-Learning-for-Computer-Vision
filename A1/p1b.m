@@ -8,13 +8,10 @@ function [img] = p1b(img, feature_size)
     % Resize image
     img = imresize(img, [img_size img_size]);
     
-    % Flatten image into a long vector
-    if size(img,3) == 3
-        img = img(:);
-    else
-        img = [img(:); img(:); img(:)];
+    if size(img,3) == 1
+        img = cat(3, img, img, img);
     end
     
-    % 
+    % Flatten image into a long vector
     img = img(:);
 end

@@ -14,11 +14,13 @@ function [img] = p5(img, codewords, scale_size, patch_size, vocab_size)
     % patches - (size*size, num_patches) -- it is overlapping!
     [frames, patches] = vl_covdet(img, 'descriptor', 'patch', 'PatchResolution', patch_size) ;
 
-    % Normalize the patches (mean 0, std 1)
+    % Normalize the patches (mean 0, std 1) then, bring them to [0, 1]
+    % range so that they can be converted to uint8
     patches = patches - mean(patches(:,:));
     patches = patches ./ repmat(std(patches(:,:)), size(patches,1), 1);
     patches = (patches - min(patches)) ./ repmat(max(patches) - min(patches), size(patches,1), 1);
     
+    % Assign each patch to a cluster
     cluster_idxs = vl_ikmeanspush(uint8(patches * 255), int32(codewords * 255));
     img = transpose(histcounts(cluster_idxs, vocab_size));
 end

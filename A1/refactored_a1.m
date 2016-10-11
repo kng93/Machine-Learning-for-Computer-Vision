@@ -80,8 +80,10 @@ for prob = PROBLEMS
 %                         COLOUR);
         case 5
             imgsize_vals = [250];
-            patch_vals = [10, 20, 30, 40];
-            vocab_size = [50, 100, 150, 200];
+            patch_vals = [40];
+            vocab_size = [50];
+            %patch_vals = [10, 20, 30, 40];
+            %vocab_size = [50, 100, 150, 200];
             k_vals = [2, 4, 8, 16, 32];
 
             run_problem(prob, ...
@@ -145,7 +147,7 @@ function [] = run_problem(prob_num, ...
         for feature_size = feature_sizes
             for part_val = part_vals
                 
-                [train_data, test_data] = set_data(prob_num, ...
+                [codewords, train_data, test_data] = set_data(prob_num, ...
                                                     cat_subdirs, ...
                                                     partition_array, ...
                                                     colour, ...
@@ -164,6 +166,7 @@ function [] = run_problem(prob_num, ...
                     min_feat = feature_size;
                     min_part = part_val;
                     min_orient = num_orient;
+                    min_codewords = codewords;
                     min_test_data = test_data;
                 end
 
@@ -175,15 +178,20 @@ function [] = run_problem(prob_num, ...
     end
     
     fprintf('FINAL RESULT (k = %d, feature_size = %d, part_size = %d, num_orient = %d):\n', ...
-            min_k, min_feat, min_part, min_orient);
-        
+            min_k, min_feat, min_part, min_orient); 
     test_model(min_test_data, min_mdl);
+    
+    % Print out codewords
+    if size(min_codewords, 1) > 0
+        patch_size = sqrt(size(min_codewords,1));
+        vl_imarraysc(reshape(min_codewords(:,:), patch_size, patch_size, [])) ;
+    end
             
     fprintf('Done part %0.1f\n', prob_num);
 end
 
 
-function [train_data, test_data] = set_data(prob_num, ...
+function [codewords, train_data, test_data] = set_data(prob_num, ...
                                             cat_subdirs, ...
                                             partition_array, ...
                                             colour, ...
@@ -192,6 +200,9 @@ function [train_data, test_data] = set_data(prob_num, ...
                                             feature_size, ...
                                             part_size, ...
                                             num_orient)
+                                        
+    codewords = [];
+    
     % Add one for the category designation
     if (prob_num == 4)
         % Get a hog result to get the hog size...
@@ -204,6 +215,7 @@ function [train_data, test_data] = set_data(prob_num, ...
         % num_orient == vocab_size
         train_data = zeros(total_train, num_orient + 1);
         [codeword_c] = create_vocab(total_train, partition_array, cat_subdirs, feature_size, part_size, num_orient);
+        codewords = codeword_c;
     else
         train_data = zeros(total_train, feature_size*part_size*part_size*colour + 1);
         test_data = zeros(total_test, feature_size*part_size*part_size*colour + 1);

@@ -1,10 +1,14 @@
 function [img] = p3(img, num_bins, num_grid)
-    fun = @(block_struct) histcounts(block_struct.data, num_bins);
 
+    % In case the image only has one colour channel (gif)
     if size(img,3) == 1
         img = cat(3, img, img, img);
     end
+    
+    % Function to be applied is to get the histogram counts
+    fun = @(block_struct) histcounts(block_struct.data, num_bins);
 
+    % Apply the histogram on each patch (as opposed to the whole image)
     red_hist = blockproc(img(:,:,1), ...
                 [ceil(size(img,1)/num_grid), ceil(size(img,2)/num_grid)], ...
                 fun);

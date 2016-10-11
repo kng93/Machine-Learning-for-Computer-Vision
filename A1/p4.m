@@ -1,4 +1,6 @@
 function [img] = p4(img, scale_size, num_cell, orient_num)
+
+    % In case the image only has one colour channel (gif)
     if size(img,3) == 1
         img = cat(3, img, img, img);
     end
