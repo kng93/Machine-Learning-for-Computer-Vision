@@ -3,7 +3,7 @@ run '/Users/karinng/Documents/SoftwareFiles/Matlab/vlfeat-0.9.20/toolbox/vl_setu
 addpath('/Users/karinng/Documents/1UniHW/cs9840/Assignments/A2/libsvm-3.21');
 DB_DIR = '/Users/karinng/Documents/1UniHW/cs9840/Assignments/A1/TenCategories';
 TRAIN_PARTITION = 0.8;
-PROBLEMS = [1.1, 1.2, 2, 3, 4, 5];
+PROBLEMS = [3, 4, 5]; %[1.1, 1.2, 2, 3, 4, 5];
 SUB_PROBLEMS = [1, 2, 3, 4, 5];
 GREYSCALE = 1;
 COLOUR = 3;
@@ -52,7 +52,7 @@ for prob = PROBLEMS
             
         case 1.2   
             disp('Combined Features');
-            
+          
             IMG_SIZE = 50;
             % Q# = [2, 4, 5], Bin_Vals = [50, 50, 250], Part_Vals = [1, 30,
             % 40], Feature_Vals = [1, 10, 100] 
@@ -64,9 +64,103 @@ for prob = PROBLEMS
             test_model(test_data, mdl);
             
         case 2
-            disp('To Implement 2');
+            pca_vals = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130];
+            disp('Greyscale Pixelwise');
+            [train_data, test_data] = combine_features([SUB_PROBLEMS(1)], ...
+                    cat_subdirs, partition_array, [50*50], [1], ...
+                    [1], GREYSCALE);
+            run_problem(prob, train_data, test_data, pca_vals);
+            
+            disp('Global Histogram');
+            [train_data, test_data] = combine_features([SUB_PROBLEMS(2)], ...
+                    cat_subdirs, partition_array, [50], [1], ...
+                    [1], COLOUR);
+            run_problem(prob, train_data, test_data, pca_vals);
+            
+            disp('Local Histogram');
+            [train_data, test_data] = combine_features([SUB_PROBLEMS(3)], ...
+                    cat_subdirs, partition_array, [10], [3], ...
+                    [1], COLOUR);
+            run_problem(prob, train_data, test_data, pca_vals);
+            
+            disp('HOG');
+            [train_data, test_data] = combine_features([SUB_PROBLEMS(4)], ...
+                    cat_subdirs, partition_array, [50], [30], ...
+                    [10], COLOUR);
+            run_problem(prob, train_data, test_data, pca_vals);
+            
+            disp('Patch');
+            if (exist(fullfile(cd, 'patch_data.mat'), 'file'))
+                load('patch_data', 'train_data', 'test_data');
+            else
+                [train_data, test_data] = combine_features([SUB_PROBLEMS(5)], ...
+                        cat_subdirs, partition_array, [250], [40], ...
+                        [100], COLOUR);
+                save('patch_data', 'train_data', 'test_data');
+            end
+            run_problem(prob, train_data, test_data, pca_vals);
+            
+            disp('Combined Features');
+            if (exist(fullfile(cd, 'combined_data.mat'), 'file'))
+                load('combined_data', 'train_data', 'test_data');
+            else
+                [train_data, test_data] = combine_features([2, 4, 5], ...
+                        cat_subdirs, partition_array, [50, 50, 250], ...
+                        [1, 30, 40], [1, 10, 100], COLOUR);
+                
+                save('combined_data', 'train_data', 'test_data');
+            end
+             
+            run_problem(prob, train_data, test_data, pca_vals);
         case 3
-            disp('To Implement 3');
+            pca_vals = [10, 20, 30, 40, 50, 60, 70];
+            disp('Greyscale Pixelwise');
+            [train_data, test_data] = combine_features([SUB_PROBLEMS(1)], ...
+                    cat_subdirs, partition_array, [50*50], [1], ...
+                    [1], GREYSCALE);
+            run_problem(prob, train_data, test_data, pca_vals);
+            
+            disp('Global Histogram');
+            [train_data, test_data] = combine_features([SUB_PROBLEMS(2)], ...
+                    cat_subdirs, partition_array, [50], [1], ...
+                    [1], COLOUR);
+            run_problem(prob, train_data, test_data, pca_vals);
+            
+            disp('Local Histogram');
+            [train_data, test_data] = combine_features([SUB_PROBLEMS(3)], ...
+                    cat_subdirs, partition_array, [10], [3], ...
+                    [1], COLOUR);
+            run_problem(prob, train_data, test_data, pca_vals);
+            
+            disp('HOG');
+            [train_data, test_data] = combine_features([SUB_PROBLEMS(4)], ...
+                    cat_subdirs, partition_array, [50], [30], ...
+                    [10], COLOUR);
+            run_problem(prob, train_data, test_data, pca_vals);
+            
+            disp('Patch');
+            if (exist(fullfile(cd, 'patch_data.mat'), 'file'))
+                load('patch_data', 'train_data', 'test_data');
+            else
+                [train_data, test_data] = combine_features([SUB_PROBLEMS(5)], ...
+                        cat_subdirs, partition_array, [250], [40], ...
+                        [100], COLOUR);
+                save('patch_data', 'train_data', 'test_data');
+            end
+            run_problem(prob, train_data, test_data, pca_vals);
+            
+            disp('Combined Features');
+            if (exist(fullfile(cd, 'combined_data.mat'), 'file'))
+                load('combined_data', 'train_data', 'test_data');
+            else
+                [train_data, test_data] = combine_features([2, 4, 5], ...
+                        cat_subdirs, partition_array, [50, 50, 250], ...
+                        [1, 30, 40], [1, 10, 100], COLOUR);
+                
+                save('combined_data', 'train_data', 'test_data');
+            end
+             
+            run_problem(prob, train_data, test_data, pca_vals);
         case 4
             disp('To Implement 4');
         case 5
