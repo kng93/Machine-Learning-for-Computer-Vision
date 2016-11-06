@@ -15,6 +15,7 @@ function [] = run_problem(prob, name, train_data, test_data, pca_vals, beta_vals
         gamma_vals = [-1];
     end
 
+    % Try various values for each paramter
     for pca_idx = 1:numel(pca_vals)
         num_pca = pca_vals(pca_idx);
         if (num_pca < size(train_data, 2))
@@ -50,6 +51,7 @@ function [] = run_problem(prob, name, train_data, test_data, pca_vals, beta_vals
         test_feats = normalize(test_feats, min_vals{6}, min_vals{7}); 
     end
     
+    % Test the best model and return the results
     test_feats = [test_feats, test_res];
     test_model(prob, test_feats, min_vals{2});
     
