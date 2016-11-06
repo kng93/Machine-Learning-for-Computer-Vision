@@ -1,5 +1,5 @@
 % Test the model (on the test data set)
-function [acc] = test_model(prob, test_data, mdl, dispVal)
+function [err] = test_model(prob, test_data, mdl, dispVal)
 
     if nargin < 4
         dispVal = true(1);
@@ -11,7 +11,7 @@ function [acc] = test_model(prob, test_data, mdl, dispVal)
     
     % Go over every test value
     num_correct = 0;
-    if (prob < 3)
+    if (prob <= 3)
         for test_idx = 1:size(test_vals,1)
             img_class = predict(mdl, test_vals(test_idx,:));
        
@@ -20,14 +20,14 @@ function [acc] = test_model(prob, test_data, mdl, dispVal)
                 num_correct = num_correct + 1; 
             end
         end
-        acc = (num_correct/size(test_vals,1));
+        err = 1 - (num_correct/size(test_vals,1));
     else
         [img_class, acc, dec_values_P] = svmpredict(test_res, test_vals, mdl, '-q');
-        acc = acc(1) / 100;
+        err = 1 - (acc(1) / 100);
     end
     
     % Print out the correct percentage
     if (dispVal)
-        fprintf('correct_test = %f\n', acc);
+        fprintf('test_err = %f\n', err);
     end
 end

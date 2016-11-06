@@ -1,6 +1,7 @@
 % Train the model - changes depending on the problem
 function [min_mdl, min_loss, min_trainloss, min_fullloss, ...
-    min_coeff, min_mins, min_ranges] = train_model(prob, full_train_data, num_pca, beta)
+    min_coeff, min_mins, min_ranges] = train_model(prob, ...
+    full_train_data, num_pca, beta, gamma)
     
     % Separate the data and the labels
     full_train_res = full_train_data(:, end);
@@ -31,12 +32,12 @@ function [min_mdl, min_loss, min_trainloss, min_fullloss, ...
             
             % Training
             [tr_mdl, train_avg_err] = get_mdl(prob, train_mask, ...
-                train_data, full_train_res, beta, train_avg_err);
+                train_data, full_train_res, beta, gamma, train_avg_err);
             
             % Validation
             
             val_feats = [val_data, full_train_res(val_mask,:)];
-            val_err = 1 - test_model(prob, val_feats, tr_mdl, false(1));
+            val_err = test_model(prob, val_feats, tr_mdl, false(1));
             val_avg_err = val_avg_err + val_err;
         end
         
@@ -51,15 +52,15 @@ function [min_mdl, min_loss, min_trainloss, min_fullloss, ...
         if (prob >= 4)
            [full_new_train, full_mins, full_ranges] = normalize(full_new_train); 
         end
-        [mdl, err] = get_mdl(prob, full_msk, full_new_train, full_train_res, beta, 0);
+        [mdl, err] = get_mdl(prob, full_msk, full_new_train, full_train_res, beta, gamma, 0);
         
-        fprintf('correct_train_cv = %f, correct_val_cv = %f \n', (1-train_loss), (1-rloss));
+        fprintf('%f & %f \\\\\\hline\n', train_loss, rloss);
     else
-        mdl = fitcdiscr(train_vals, train_res);
+        mdl = fitcdiscr(full_train_vals, full_train_res);
         rloss = resubLoss(mdl);
         train_loss = 0;
         err = rloss;
-        fprintf('correct_train = %f ', (1-rloss));
+        fprintf('correct_train = %f ', rloss);
     end
 
     % Keep track of the lowest loss and the model associated with it
@@ -67,26 +68,38 @@ function [min_mdl, min_loss, min_trainloss, min_fullloss, ...
         min_loss = rloss;
         min_trainloss = train_loss;
         min_mdl = mdl;
-        min_coeff = full_coeff(:, 1:num_pca);
         min_fullloss = err;
-        min_mins = full_mins;
-        min_ranges = full_ranges;
+        if (prob >= 2)
+            min_coeff = full_coeff(:, 1:num_pca);
+        else
+            min_coeff = -1;
+        end
+        if (prob >= 4)
+            min_mins = full_mins;
+            min_ranges = full_ranges;
+        else
+            min_mins = -1;
+            min_ranges = -1;
+        end
     end
 end
 
 % Get the model and error after PCA 
-function [mdl, err] = get_mdl(prob, data_mask, new_train_feats, full_res, beta, avg_err)
-    if (prob == 4)
+function [mdl, err] = get_mdl(prob, data_mask, new_train_feats, full_res, beta, gamma, avg_err)
+    if (prob == 5)
+        mdl = svmtrain(full_res(data_mask,:), new_train_feats, ['-t 2 -c ', num2str(beta), ' -g ', num2str(gamma), ' -q']);
+    elseif (prob == 4)
         mdl = svmtrain(full_res(data_mask,:), new_train_feats, ['-t 0 -c ', num2str(beta), ' -q']); 
     elseif (prob == 3)
         mdl = fitcdiscr(new_train_feats, full_res(data_mask,:), 'discrimType', 'quadratic');
     else
-        mdl = fitcdiscr(new_train_feats, full_res(data_mask,:));
+        mdl = fitcdiscr(new_train_feats, full_res(data_mask,:)); 
     end
     
     if (prob < 4)
         err = avg_err + resubLoss(mdl);
     else
-        err = 1; %TODO: CHANGE
+        [img_class, acc, dec_values_P] = svmpredict(full_res(data_mask,:), new_train_feats, mdl, '-q');
+        err = 1 - (acc(1) / 100);
     end
 end
