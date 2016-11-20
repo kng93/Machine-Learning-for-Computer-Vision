@@ -19,6 +19,10 @@ function [mdl, loss] = train_model(prob, classifier, full_train_data, ...
     else
         mdl = fitensemble(full_train_vals, full_train_res, classifier, ...
             num_tree, templ, 'type', 'classification');
-        loss = resubLoss(mdl);
+        if (prob == 3)
+            loss = resubLoss(mdl, 'Mode', 'cumulative');
+        else
+            loss = resubLoss(mdl);
+        end
     end
 end

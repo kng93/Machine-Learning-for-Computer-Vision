@@ -4,9 +4,13 @@ function [] = run_problem(prob, classifier, train_data, test_data, max_num_split
     min_vals = cell(3, 1);
     min_vals{1} = 1; % loss initialized for comparison
   
+    % Clear the figure
+    h = figure(prob);
+    if ishandle(h)
+        clf(prob)
+    end
     hold on;
     figure(prob);
-    % TODO: plot_loss = zeros(1, size(pca_vals, 2));
 
     % Cross validation on number of maximum splits
     for num_split = max_num_splits
@@ -24,18 +28,28 @@ function [] = run_problem(prob, classifier, train_data, test_data, max_num_split
     % CROSS VAL RESULTS
     fprintf('CV -- NUM SPLIT: %d, NUM_TREE: %d, train_err (full) = %f\n', ...
         min_vals{4}, min_vals{3}, min_vals{1});
-    legend({'MaxNumSplits=1', 'MaxNumSplits=5', 'MaxNumSplits=10', 'MaxNumSplits=20'});
-    axis([0 max_num_trees 0 1]);
-    xlabel('Num Trees'); ylabel('Cross Val Loss'); title(['Question ', num2str(prob)]);
-    hold off;
     
     % Full train on chosen parameters
     [full_mdl, full_loss]= train_model(prob, classifier, train_data, ...
         min_vals{4}, min_vals{3}, false(1));
+   
+    if (prob == 3)
+        plot(full_loss, '-x');
+    end
+
     fprintf('FULL TRAIN -- NUM SPLIT: %d, NUM_TREE: %d, train_err (full) = %f\n', ...
-        min_vals{4}, min_vals{3}, full_loss);
-    
+        min_vals{4}, min_vals{3}, min(full_loss));
     % Test
-    test_model(prob, test_data, full_mdl);
+    [err, cLoss] = test_model(prob, test_data, full_mdl);
+
+
+    if (prob < 3)
+        legend({'MNS=1', 'MNS=5', 'MNS=10', 'MNS=20'});
+    else
+        plot(cLoss, '-x');
+        legend({'Cross Val', 'Training', 'Testing'});
+    end
+	axis([0 max_num_trees 0 1]);
+	xlabel('Num Trees'); ylabel('Loss'); title(['Question ', num2str(prob)]);
     
 end

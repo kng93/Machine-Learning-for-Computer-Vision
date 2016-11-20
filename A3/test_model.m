@@ -1,4 +1,4 @@
-function [err] = test_model(prob, test_data, mdl, dispVal)
+function [err, cLoss] = test_model(prob, test_data, mdl, dispVal)
     if nargin < 4
         dispVal = true(1);
     end
@@ -17,6 +17,7 @@ function [err] = test_model(prob, test_data, mdl, dispVal)
         end
     end
     err = 1 - (num_correct/size(test_vals,1));
+    cLoss = loss(mdl, test_vals, test_res, 'mode', 'cumulative');
 
     % Print out the correct percentage
     if (dispVal)

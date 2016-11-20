@@ -34,15 +34,21 @@ for prob = PROBLEMS
             classifier = 'bag';
             
         case 2
+            disp('Question 2');
             
             max_num_splits = [1, 5, 10, 20];
             max_num_trees = 50;
             classifier = 'AdaBoostM2';
             
         case 3
-            disp('Implement 3');
+            max_num_splits = [20]; %10
+            max_num_trees = [150]; %125
+            classifier = 'AdaBoostM2';
+            
         case 4
-            disp('Implement 4');
+            max_num_splits = [20]; %10
+            max_num_trees = [150]; %125
+            classifier = 'Bag';
     end
     
     run_problem(prob, classifier, train_data, test_data, ...
