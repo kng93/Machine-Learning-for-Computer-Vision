@@ -28,7 +28,8 @@ for prob = PROBLEMS
             disp('Finished setting up features');
               
             max_num_splits = [1, 5, 10, 20];
-            run_problem(prob, train_data, test_data, max_num_splits);
+            max_num_trees = 50;
+            run_problem(prob, train_data, test_data, max_num_splits, max_num_trees);
             
         case 2
             disp('Implement 2');

@@ -1,5 +1,5 @@
 % Train the model - changes depending on the problem
-function [mdl, loss, num_tree] = train_model(prob, full_train_data, num_split, num_tree, crossVal)
+function [mdl, loss] = train_model(prob, full_train_data, num_split, num_tree, crossVal)
     if nargin < 5
         crossVal = true(1);
     end
@@ -14,7 +14,6 @@ function [mdl, loss, num_tree] = train_model(prob, full_train_data, num_split, n
         mdl = fitensemble(full_train_vals, full_train_res, 'Bag', ...
             num_tree, templ, 'type', 'classification', 'kfold', 5);
         loss = kfoldLoss(mdl, 'Mode','cumulative');
-        [loss,  num_tree] = min(loss);
     else
         mdl = fitensemble(full_train_vals, full_train_res, 'Bag', ...
             num_tree, templ, 'type', 'classification');
