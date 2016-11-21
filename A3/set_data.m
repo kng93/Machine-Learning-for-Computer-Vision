@@ -10,19 +10,22 @@ function [codewords, train_data, test_data] = set_data(prob_num, ...
                                             feature_val)
                                         
     codewords = []; % Default is empty because only p5 uses this
-    
+    imgs = dir(fullfile(cat_subdirs(1).folder, cat_subdirs(1).name, '*.jpg'));
+    img = imread(fullfile(imgs(1).folder,imgs(1).name));
+
     % Initialization of data and problem-specific information
     if (prob_num == 4)
         % Get a hog result to get the hog size...
         % feature_val == number of orientations
-        imgs = dir(fullfile(cat_subdirs(1).folder, cat_subdirs(1).name, '*.jpg'));
-        img = imread(fullfile(imgs(1).folder,imgs(1).name));
         img = hog(img, bin_val, part_size, feature_val);
         data_length = size(img ,1);
     elseif (prob_num == 5)
         % feature_val == vocab_size
         data_length = feature_val;
         codewords = create_vocab(partition_array, cat_subdirs, bin_val, part_size, feature_val);
+    elseif (prob_num == 6)
+        img = sift(img, bin_val);
+        data_length = size(img ,1);
     else
         data_length = bin_val*part_size*part_size*colour;
     end
@@ -56,6 +59,8 @@ function [codewords, train_data, test_data] = set_data(prob_num, ...
                     img = hog(img, bin_val, part_size, feature_val);
                 case 5
                     img = patch_based(img, codewords, bin_val, part_size, feature_val);
+                case 6
+                    img = sift(img, bin_val);
             end
             
             % If part of training dataset

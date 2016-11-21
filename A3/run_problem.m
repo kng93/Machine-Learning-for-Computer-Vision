@@ -33,7 +33,7 @@ function [] = run_problem(prob, classifier, train_data, test_data, max_num_split
     [full_mdl, full_loss]= train_model(prob, classifier, train_data, ...
         min_vals{4}, min_vals{3}, false(1));
    
-    if (prob == 3)
+    if (prob >= 3)
         plot(full_loss, '-x');
     end
 
