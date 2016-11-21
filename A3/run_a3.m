@@ -12,17 +12,17 @@ for prob = PROBLEMS
     if (exist(fullfile(cd, 'combined_data.mat'), 'file'))
         load('combined_data', 'train_data', 'test_data');
     else
-%         if (prob == 4)
-%             qNums = [1, 2, 3, 4, 5, 6];
-%             bins = [50*50, 50, 10, 50, 250, 20];
-%             parts = [1, 1, 3, 30, 40, 1];
-%             features = [1, 1, 1, 10, 100, 1];
-%         else
+        if (prob == 4)
+            qNums = [1, 2, 3, 4, 5, 6];
+            bins = [50*50, 50, 10, 50, 250, 20];
+            parts = [1, 1, 3, 30, 40, 1];
+            features = [1, 1, 1, 10, 100, 1];
+        else
             qNums = [1, 2, 3, 4, 5];
             bins = [50*50, 50, 10, 50, 250];
             parts = [1, 1, 3, 30, 40];
             features = [1, 1, 1, 10, 100];
-%         end
+        end
         
         
         
@@ -56,7 +56,7 @@ for prob = PROBLEMS
             classifier = 'AdaBoostM2';
             
         case 4
-            max_num_splits = [40]; %10
+            max_num_splits = [50]; %10
             max_num_trees = [200]; %125
             classifier = 'Bag';
     end
